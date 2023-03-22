@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.IO;
 using System.Threading;
 using System.Collections.Generic;
 
@@ -300,6 +301,20 @@ namespace Mono.Debugging.Client
 
 		public UsageCounter ThreadsPadUsageCounter {
 			get; private set;
+		}
+
+		public static string DownloadedSourceLocation {
+			get; private set;
+		}
+
+		/// <summary>
+		/// Creates a folder for downloaded source files.
+		/// </summary>
+		public void SetSourceLocation (string sourceLocation)
+		{
+			DownloadedSourceLocation = sourceLocation;
+			if (!Directory.Exists (sourceLocation))
+				Directory.CreateDirectory (sourceLocation);
 		}
 
 		/// <summary>

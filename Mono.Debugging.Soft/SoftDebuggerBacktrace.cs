@@ -35,7 +35,6 @@ using MDB = Mono.Debugger.Soft;
 using DC = Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 using System.IO;
-using System.Security.Cryptography;
 using System.Net.Http;
 
 namespace Mono.Debugging.Soft
@@ -44,51 +43,33 @@ namespace Mono.Debugging.Soft
 		public Mono.Debugger.Soft.StackFrame StackFrame {
 			get; private set;
 		}
-		private static SHA256 _sha256 = System.Security.Cryptography.SHA256.Create ();
 		private static HttpClient HttpClient => new HttpClient ();
+
 		public SoftDebuggerStackFrame (Mono.Debugger.Soft.StackFrame frame, string addressSpace, SourceLocation location, string language, bool isExternalCode, bool hasDebugInfo, bool isDebuggerHidden, string fullModuleName, string fullTypeName)
 			: base (frame.ILOffset, addressSpace, location, language, isExternalCode, hasDebugInfo, isDebuggerHidden, fullModuleName, fullTypeName)
 		{
 			StackFrame = frame;
 			if (location.SourceLink == null || File.Exists (location.FileName))
 				return;
-			string sourceLinkCachedPathPartial = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "SourceServer", GetHashOfString (location.SourceLink.Uri));
-			string sourceLinkCachedPath = Path.Combine (sourceLinkCachedPathPartial, location.SourceLink.RelativeFilePath);
+			string sourceLinkCachedPath = Path.Combine(DebuggerSession.DownloadedSourceLocation, location.SourceLink.RelativeFilePath);
 			if (File.Exists (sourceLinkCachedPath)) //first try to find on cache using relativePath as it's done by VS while debugging
 			{
 				this.UpdateSourceFile(sourceLinkCachedPath);
 			} else {
-				sourceLinkCachedPath = Path.Combine (sourceLinkCachedPathPartial, Path.GetFileName (location.SourceLink.RelativeFilePath));
-				if (File.Exists (sourceLinkCachedPath)) //second try to find on cache without relativePath as it's done by VS when using "Go To Definition (F12)"
-				{
-					this.UpdateSourceFile (sourceLinkCachedPath);
-				}
-				else
-				{
-					try {
-						using (var response = HttpClient.GetStreamAsync (location.SourceLink.Uri).Result) {
-							Directory.CreateDirectory (Path.GetDirectoryName (sourceLinkCachedPath));
-							var fileStream = File.Create (sourceLinkCachedPath);
-							response.CopyTo (fileStream);
-							fileStream.Close ();
-							this.UpdateSourceFile (sourceLinkCachedPath);
-						}
-					}
-					catch (Exception) {
-						DC.DebuggerLoggingService.LogMessage ($"File with uri={location.SourceLink.Uri} is not available for download");
-						//expected exception when file is not available for download
+				try {
+					using (var response = HttpClient.GetStreamAsync (location.SourceLink.Uri).Result) {
+						Directory.CreateDirectory (Path.GetDirectoryName (sourceLinkCachedPath));
+						var fileStream = File.Create (sourceLinkCachedPath);
+						response.CopyTo (fileStream);
+						fileStream.Close ();
+						this.UpdateSourceFile (sourceLinkCachedPath);
 					}
 				}
+				catch (Exception) {
+					DC.DebuggerLoggingService.LogMessage ($"File with uri={location.SourceLink.Uri} is not available for download");
+					//expected exception when file is not available for download
+				}
 			}
-		}
-		private static string GetHashOfString (string str)
-		{
-			byte[] bytes = _sha256.ComputeHash (UnicodeEncoding.Unicode.GetBytes (str));
-			StringBuilder builder = new StringBuilder (bytes.Length * 2);
-			foreach (byte b in bytes) {
-				builder.Append (b.ToString ("x2"));
-			}
-			return builder.ToString ();
 		}
 	}
 	
