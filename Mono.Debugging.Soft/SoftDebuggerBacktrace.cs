@@ -30,7 +30,6 @@ using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using Mono.Debugging.Client;
-using Mono.Debugging.Backend;
 using MDB = Mono.Debugger.Soft;
 using DC = Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
@@ -126,26 +125,6 @@ namespace Mono.Debugging.Soft
 			string typeFullName = null;
 			string typeFQN = null;
 			string methodName;
-			int lineNumber = frame.LineNumber;
-			int columnNumber = frame.ColumnNumber;
-			int endLineNumber = frame.Location.EndLineNumber;
-			int endColumnNumber = frame.Location.EndColumnNumber;
-
-			if (fileName ==  null) {
-
-				var ppdb = session.GetPdbData (frame.Method);
-				if (ppdb != null) {
-					(int max_il_offset, int[] il_offsets, int[] line_numbers, int[] column_numbers, int[] end_line_numbers, int[] end_column_numbers, string[] source_files) = ppdb.GetDebugInfoFromPdb (method);
-					frame.Method.SetDebugInfoFromPdb (max_il_offset, il_offsets, line_numbers, column_numbers, end_line_numbers, end_column_numbers, source_files);
-					frame.ClearDebugInfoToTryToGetFromLoadedPdb ();
-					fileName = frame.FileName;
-					lineNumber = frame.LineNumber;
-					columnNumber = frame.ColumnNumber;
-					endLineNumber = frame.Location.EndLineNumber;
-					endColumnNumber = frame.Location.EndColumnNumber;
-				}
-			}
-			
 			
 			if (fileName != null)
 				fileName = SoftDebuggerSession.NormalizePath (fileName);
@@ -234,8 +213,8 @@ namespace Mono.Debugging.Soft
 				}
 			}
 
-			var sourceLink = session.GetSourceLink (frame.Method, fileName);
-			var location = new DC.SourceLocation (methodName, fileName, lineNumber, columnNumber, endLineNumber, endColumnNumber, frame.Location.SourceFileHash, sourceLink);
+			var sourceLink = session.GetSourceLink (frame.Method, frame.FileName);
+			var location = new DC.SourceLocation (methodName, fileName, frame.LineNumber, frame.ColumnNumber, frame.Location.EndLineNumber, frame.Location.EndColumnNumber, frame.Location.SourceFileHash, sourceLink);
 
 			string addressSpace = string.Empty;
 			bool hasDebugInfo = false;
@@ -255,7 +234,7 @@ namespace Mono.Debugging.Soft
 
 			return new SoftDebuggerStackFrame (frame, addressSpace, location, language, external, hasDebugInfo, hidden, typeFQN, typeFullName);
 		}
-
+		
 		protected override EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)
 		{
 			ValidateStack ();
