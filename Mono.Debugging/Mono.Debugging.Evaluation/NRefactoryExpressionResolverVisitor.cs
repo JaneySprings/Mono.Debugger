@@ -137,6 +137,10 @@ namespace Mono.Debugging.Evaluation
 			int length = loc.SourceSpan.Length;
 			int offset = loc.SourceSpan.Start;
 
+			// skip identifiers that are part of a member access expression
+			if (node.Parent is MemberAccessExpressionSyntax && offset > 0 && expression[offset-1] == '.')
+				return;
+
 			ReplaceType (node.Identifier.ValueText, node.Arity, offset, length);
 		}
 
