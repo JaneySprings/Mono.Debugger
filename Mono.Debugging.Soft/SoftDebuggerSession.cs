@@ -359,7 +359,7 @@ namespace Mono.Debugging.Soft
 		
 		void ConnectionStarting (IAsyncResult connectionHandle, DebuggerStartInfo dsi, bool listening, int attemptNumber) 
 		{
-			if (connection != null && (attemptNumber == 0 || !connection.IsCompleted))
+			if (connection != null && !connection.IsCompleted)
 				throw new InvalidOperationException ("Already connecting");
 			
 			connection = connectionHandle;
