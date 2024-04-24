@@ -928,7 +928,7 @@ namespace Mono.Debugging.Soft
 			SourceLinkMap[] maps;
 
 			lock (SourceLinkCache) {
-				if (SourceLinkCache.TryGetValue (asm, out maps))
+				if (SourceLinkCache.TryGetValue (asm, out maps) && maps.Count() > 0)
 					return maps;
 			}
 
@@ -936,7 +936,8 @@ namespace Mono.Debugging.Soft
 
 			if (asm.VirtualMachine.Version.AtLeast (2, 48)) {
 				jsonString = asm.ManifestModule.SourceLink;
-			} else {
+			}
+			if (jsonString == "") {
 				// Read the pdb ourselves
 				jsonString = GetPdbData (asm)?.GetSourceLinkBlob ();
 			}
