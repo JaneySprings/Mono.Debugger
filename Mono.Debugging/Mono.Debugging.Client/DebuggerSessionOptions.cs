@@ -47,6 +47,7 @@ namespace Mono.Debugging.Client
 		public AutomaticSourceDownload AutomaticSourceLinkDownload { get; set; }
 		public bool DebugSubprocesses { get; set; }
 		public ImmutableArray<SymbolSource> SymbolSearchPaths { get; set; } = ImmutableArray<SymbolSource>.Empty;
+		public ImmutableDictionary<string, string> SourceCodeMappings { get; set; } = ImmutableDictionary<string, string>.Empty;
 		public bool SearchMicrosoftSymbolServer { get; set; }
 		public bool SearchNuGetSymbolServer { get; set; }
 	}
