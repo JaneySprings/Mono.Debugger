@@ -44,7 +44,7 @@ namespace Mono.Debugging.Client
 		public EvaluationOptions EvaluationOptions { get; set; }
 		public bool StepOverPropertiesAndOperators { get; set; }
 		public bool ProjectAssembliesOnly { get; set; }
-		public AutomaticSourceDownload AutomaticSourceLinkDownload { get; set; }
+		public bool AutomaticSourceLinkDownload { get; set; }
 		public bool DebugSubprocesses { get; set; }
 		public ImmutableArray<SymbolSource> SymbolSearchPaths { get; set; } = ImmutableArray<SymbolSource>.Empty;
 		public ImmutableDictionary<string, string> SourceCodeMappings { get; set; } = ImmutableDictionary<string, string>.Empty;
