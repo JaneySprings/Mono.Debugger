@@ -930,6 +930,11 @@ namespace Mono.Debugger.Soft
 				return inited;
 			}
 		}
+
+		public override string ToString ()
+		{
+			return string.IsNullOrEmpty (FullName) ? base.ToString () : FullName;
+		}
     }
 
 	public class SourceUpdate
