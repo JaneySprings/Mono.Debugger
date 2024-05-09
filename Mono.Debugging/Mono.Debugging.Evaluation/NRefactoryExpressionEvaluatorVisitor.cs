@@ -974,9 +974,9 @@ namespace Mono.Debugging.Evaluation
 
 			if (!(target is TypeValueReference)) {
 				if (ctx.Adapter.IsNull(ctx, target.Value))
-					throw new EvaluatorException("{0} is null", target.Name);
+					throw new EvaluatorException("'{0}' is null", target.Name);
 			}
-			throw new EvaluatorException("{0} is null", target.Name);
+			throw new EvaluatorException("'{0}' does not contain a definition for '{1}'", target.Name, node.Name.Identifier.ValueText);
 
 		}
 

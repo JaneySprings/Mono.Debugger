@@ -92,14 +92,14 @@ namespace Mono.Debugging.Evaluation
 			return result.Remove (result.Length - 1) + ">";
 		}
 
-		void ReplaceType (string name, int genericArgs, int offset, int length, bool memberType = false)
+		void ReplaceType (string name, int genericArgs, int offset, int length, bool memberType = false, bool typesOnly = false)
 		{
 			string type;
 
 			if (genericArgs == 0)
-				type = session.ResolveIdentifierAsType (name, location);
+				type = session.ResolveIdentifierAsType (name, location, typesOnly);
 			else
-				type = session.ResolveIdentifierAsType (name + "`" + genericArgs, location);
+				type = session.ResolveIdentifierAsType (name + "`" + genericArgs, location, typesOnly);
 
 			if (string.IsNullOrEmpty (type)) {
 				parentType = null;
@@ -136,12 +136,13 @@ namespace Mono.Debugging.Evaluation
 			var loc = node.Identifier.GetLocation();
 			int length = loc.SourceSpan.Length;
 			int offset = loc.SourceSpan.Start;
+			bool typesOnly = !(node.Parent is MemberAccessExpressionSyntax);
 
 			// skip identifiers that are part of a member access expression
 			if (node.Parent is MemberAccessExpressionSyntax && offset > 0 && expression[offset-1] == '.')
 				return;
 
-			ReplaceType (node.Identifier.ValueText, node.Arity, offset, length);
+			ReplaceType (node.Identifier.ValueText, node.Arity, offset, length, typesOnly: typesOnly);
 		}
 
 		public override void VisitSimpleBaseType (SimpleBaseTypeSyntax node)
@@ -160,7 +161,7 @@ namespace Mono.Debugging.Evaluation
 			int length = loc.SourceSpan.Length;
 			int offset = loc.SourceSpan.Start;
 
-			ReplaceType(node.Identifier.ValueText, node.TypeArgumentList.Arguments.Count, offset, length);
+			ReplaceType(node.Identifier.ValueText, node.TypeArgumentList.Arguments.Count, offset, length, typesOnly: true);
 		}
 	}
 }
