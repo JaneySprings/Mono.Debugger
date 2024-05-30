@@ -136,7 +136,10 @@ namespace Mono.Debugging.Evaluation
 			var loc = node.Identifier.GetLocation();
 			int length = loc.SourceSpan.Length;
 			int offset = loc.SourceSpan.Start;
-			bool typesOnly = !(node.Parent is MemberAccessExpressionSyntax);
+			bool typesOnly = (node.Parent is BinaryExpressionSyntax bes && bes.OperatorToken.Text == "as" && bes.Right == node)
+				|| (node.Parent is CastExpressionSyntax ces && ces.Type == node)
+				|| (node.Parent is ObjectCreationExpressionSyntax oces && oces.Type == node)
+				|| (node.Parent is TypeOfExpressionSyntax toes && toes.Type == node);
 
 			// skip identifiers that are part of a member access expression
 			if (node.Parent is MemberAccessExpressionSyntax && offset > 0 && expression[offset-1] == '.')
