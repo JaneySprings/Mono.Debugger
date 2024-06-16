@@ -2699,30 +2699,18 @@ namespace Mono.Debugging.Soft
 				if (frames.Length == 0)
 					return string.Empty;
 
-				EvaluationOptions ops = Options.EvaluationOptions.Clone ();
-				ops.AllowTargetInvoke = true;
-				ops.EllipsizedLength = 1000;
-
-				var ctx = new SoftEvaluationContext (this, frames[0], ops);
-
-				if (bp != null) {
-					// validate conditional breakpoint expressions so that we can provide error reporting to the user
-					var vr = ctx.Evaluator.ValidateExpression (ctx, expression);
-					if (!vr.IsValid) {
-						string message = string.Format ("Invalid expression in conditional breakpoint. {0}", vr.Message);
-						string location = FormatSourceLocation (bp);
-
-						if (!string.IsNullOrEmpty (location))
-							message = location + ": " + message;
-
-						OnDebuggerOutput (true, message);
-						return string.Empty;
-					}
-
-					// resolve types...
-					if (ctx.SourceCodeAvailable)
-						expression = ctx.Evaluator.Resolve (this, GetSourceLocation (frames[0]), expression);
+				var ctx = new SoftEvaluationContext (this, frames[0], Options.EvaluationOptions);
+				// validate conditional breakpoint expressions so that we can provide error reporting to the user
+				var vr = ctx.Evaluator.ValidateExpression (ctx, expression);
+				if (!vr.IsValid) {
+					string message = string.Format ("Invalid expression in conditional breakpoint. {0}", vr.Message);
+					OnDebuggerOutput (true, message);
+					return string.Empty;
 				}
+
+				// resolve types...
+				if (ctx.SourceCodeAvailable)
+					expression = ctx.Evaluator.Resolve (this, GetSourceLocation (frames[0]), expression);
 
 				ValueReference val = ctx.Evaluator.Evaluate (ctx, expression);
 				if (bp != null && !bp.BreakIfConditionChanges && !IsBoolean (val)) {
