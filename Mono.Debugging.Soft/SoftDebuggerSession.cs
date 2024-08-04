@@ -3339,6 +3339,9 @@ namespace Mono.Debugging.Soft
 		
 		public AssemblyLine[] Disassemble (StackFrame frame, int firstLine, int count)
 		{
+			if (count < 0)
+				return Disassemble (frame);
+
 			var body = frame.Method.GetMethodBody ();
 			var instructions = body.Instructions;
 			ILInstruction current = null;
