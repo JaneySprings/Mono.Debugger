@@ -2263,37 +2263,25 @@ namespace Mono.Debugging.Soft
 
 		private void HandleAssemblyLoaded (AssemblyMirror asm)
 		{
-			var name = asm.GetName ();
-			var assemblyObject = asm.GetAssemblyObject ();
-			var assemblyFullName = name.FullName;
-			bool isDynamic = asm.IsDynamic;
-			string assemblyName;
-			bool hasSymbol;
-			if (!isDynamic) {
-				var metaData = asm?.GetMetadata() ?? null;
-				assemblyName = metaData?.MainModule?.Name ?? string.Empty;
-				hasSymbol = metaData?.MainModule?.HasSymbols ?? false;
-			} else {
-				assemblyName = "Dynamic Assembly";
-				hasSymbol = false;
-			}
+			var assemblyName = asm.GetName ();
+			var isAssemblyDynamic = asm.IsDynamic;
 			var assembly = new Assembly (
-				assemblyName,
+				isAssemblyDynamic ? "Dynamic Assembly" : assemblyName.Name,
 				asm?.Location ?? string.Empty,
 				true,
-				userAssemblyNames?.Contains (assemblyFullName) ?? hasSymbol,
+				userAssemblyNames.Contains (assemblyName.FullName),
 				string.Empty,
-				symbolPathMap.TryGetValue (assemblyFullName, out var path) ? path : string.Empty,
+				symbolPathMap.TryGetValue (assemblyName.FullName, out var path) ? path : string.Empty,
 				-1,
-				name?.Version?.ToString () ?? string.Empty,
+				assemblyName?.Version?.ToString () ?? string.Empty,
 				// TODO: module time stamp
 				string.Empty,
-				assemblyObject?.Address.ToString () ?? string.Empty,
+				string.Empty,
 				string.Format ("[{0}]{1}", asm?.VirtualMachine?.TargetProcess?.Id ?? -1, asm?.VirtualMachine?.TargetProcess?.ProcessName ?? string.Empty),
 				asm?.Domain?.FriendlyName ?? string.Empty,
 				asm?.VirtualMachine?.TargetProcess?.Id ?? -1,
-				hasSymbol,
-				isDynamic
+				symbolPathMap.ContainsKey (assemblyName.FullName),
+				isAssemblyDynamic
 			);
 
 			OnAssemblyLoaded (assembly);
