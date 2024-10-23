@@ -2269,7 +2269,7 @@ namespace Mono.Debugging.Soft
 				isAssemblyDynamic ? "Dynamic Assembly" : assemblyName.Name,
 				asm?.Location ?? string.Empty,
 				true,
-				userAssemblyNames.Contains (assemblyName.FullName),
+				userAssemblyNames?.Contains (assemblyName.FullName) ?? true,
 				string.Empty,
 				symbolPathMap.TryGetValue (assemblyName.FullName, out var path) ? path : string.Empty,
 				-1,
