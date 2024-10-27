@@ -40,7 +40,7 @@ namespace Mono.Debugging.Client
 	public delegate void ProcessEventHandler (int processId);
 	public delegate void ThreadEventHandler (int threadId);
 	public delegate bool ExceptionHandler (Exception ex);
-	public delegate string TypeResolverHandler (string identifier, SourceLocation location, bool typesOnly);
+	public delegate string TypeResolverHandler (string identifier, SourceLocation location);
 	public delegate void BreakpointTraceHandler (BreakEvent be, string trace);
 	public delegate IExpressionEvaluator GetExpressionEvaluatorHandler (string extension);
 	public delegate IConnectionDialog ConnectionDialogCreatorExtended (DebuggerStartInfo dsi);
@@ -1113,10 +1113,10 @@ namespace Mono.Debugging.Client
 			return resolver.Resolve(this, location, expression);
 		}
 		
-		internal protected string ResolveIdentifierAsType (string identifier, SourceLocation location, bool typesOnly)
+		internal protected string ResolveIdentifierAsType (string identifier, SourceLocation location)
 		{
 			if (TypeResolverHandler != null)
-				return TypeResolverHandler (identifier, location, typesOnly);
+				return TypeResolverHandler (identifier, location);
 
 			return null;
 		}

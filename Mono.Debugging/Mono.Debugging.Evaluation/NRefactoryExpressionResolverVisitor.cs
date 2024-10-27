@@ -92,14 +92,14 @@ namespace Mono.Debugging.Evaluation
 			return result.Remove (result.Length - 1) + ">";
 		}
 
-		void ReplaceType (string name, int genericArgs, int offset, int length, bool memberType = false, bool typesOnly = false)
+		void ReplaceType (string name, int genericArgs, int offset, int length, bool memberType = false)
 		{
 			string type;
 
 			if (genericArgs == 0)
-				type = session.ResolveIdentifierAsType (name, location, typesOnly);
+				type = session.ResolveIdentifierAsType (name, location);
 			else
-				type = session.ResolveIdentifierAsType (name + "`" + genericArgs, location, typesOnly);
+				type = session.ResolveIdentifierAsType (name + "`" + genericArgs, location);
 
 			if (string.IsNullOrEmpty (type)) {
 				parentType = null;
@@ -136,16 +136,12 @@ namespace Mono.Debugging.Evaluation
 			var loc = node.Identifier.GetLocation();
 			int length = loc.SourceSpan.Length;
 			int offset = loc.SourceSpan.Start;
-			bool typesOnly = (node.Parent is BinaryExpressionSyntax bes && bes.OperatorToken.Text == "as" && bes.Right == node)
-				|| (node.Parent is CastExpressionSyntax ces && ces.Type == node)
-				|| (node.Parent is ObjectCreationExpressionSyntax oces && oces.Type == node)
-				|| (node.Parent is TypeOfExpressionSyntax toes && toes.Type == node);
 
 			// skip identifiers that are part of a member access expression
 			if (node.Parent is MemberAccessExpressionSyntax && offset > 0 && expression[offset-1] == '.')
 				return;
 
-			ReplaceType (node.Identifier.ValueText, node.Arity, offset, length, typesOnly: typesOnly);
+			ReplaceType (node.Identifier.ValueText, node.Arity, offset, length);
 		}
 
 		public override void VisitSimpleBaseType (SimpleBaseTypeSyntax node)
@@ -164,7 +160,7 @@ namespace Mono.Debugging.Evaluation
 			int length = loc.SourceSpan.Length;
 			int offset = loc.SourceSpan.Start;
 
-			ReplaceType(node.Identifier.ValueText, node.TypeArgumentList.Arguments.Count, offset, length, typesOnly: true);
+			ReplaceType(node.Identifier.ValueText, node.TypeArgumentList.Arguments.Count, offset, length);
 		}
 	}
 }
