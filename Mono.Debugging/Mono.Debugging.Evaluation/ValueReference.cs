@@ -155,7 +155,9 @@ namespace Mono.Debugging.Evaluation
 				ctx.Options.AllowTargetInvoke = true;
 
 				var vref = ctx.Evaluator.Evaluate (ctx, value, Type);
-				var newValue = ctx.Adapter.Convert (ctx, vref.Value, Type);
+				var newValue = (vref is NullValueReference) 
+					? ctx.Adapter.CreateNullValue (ctx, Type)
+					: ctx.Adapter.Convert (ctx, vref.Value, Type);
 				SetValue (ctx, newValue);
 			} catch (Exception ex) {
 				Context.WriteDebuggerError (ex);

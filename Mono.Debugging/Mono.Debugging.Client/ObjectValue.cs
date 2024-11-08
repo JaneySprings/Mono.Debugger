@@ -793,6 +793,7 @@ namespace Mono.Debugging.Client
 				flags = val.flags;
 				source = val.source;
 				children = val.children;
+				isNull = val.isNull;
 				path = val.path;
 				updater = val.updater;
 				ConnectCallbacks (parentFrame, this);
