@@ -3073,7 +3073,7 @@ namespace Mono.Debugging.Soft
 					if (line >= rangeFirstLine && line <= rangeLastLine)
 						insideTypeRange = true;
 
-					if (line == location.LineNumber && (column <= location.ColumnNumber)) {
+					if (line == location.LineNumber && (column <= 1 || column == location.ColumnNumber)) {
 						if (target != null) {
 							if (location.ILOffset < target.ILOffset)
 								target = location;
@@ -3086,6 +3086,9 @@ namespace Mono.Debugging.Soft
 					rangeLastLine = -1;
 				}
 			}
+
+			if (target == null && column != -1)
+				target = FindLocationByMethod (method, file, line, -1, ref insideTypeRange);
 
 			return target;
 		}
