@@ -661,6 +661,7 @@ namespace Mono.Debugging.Client
 				return;
 
 			OnSetNextStatement (thread.Id, fileName, line, column);
+			OnTargetEvent (new TargetEventArgs (TargetEventType.TargetStopped) { Thread = thread });
 		}
 
 		/// <summary>
