@@ -196,12 +196,18 @@ namespace Mono.Debugging.Client
 
 			var methodNameBuilder = new StringBuilder ();
 
+			if (options.StackFrameFormat.Language && !string.IsNullOrEmpty (Language)) {
+				methodNameBuilder.Append ('[' + Language + ']');
+				methodNameBuilder.Append (' ');
+			}
 			if (options.StackFrameFormat.Module && !string.IsNullOrEmpty (FullModuleName)) {
 				methodNameBuilder.Append (Path.GetFileName (FullModuleName));
 				methodNameBuilder.Append ('!');
 			}
 
 			methodNameBuilder.Append (SourceLocation.MethodName);
+			if (SourceLocation.MethodName.EndsWith('.'))
+				methodNameBuilder.Append ("AnonymousMethod__");
 
 			if (options.StackFrameFormat.ParameterTypes || options.StackFrameFormat.ParameterNames || options.StackFrameFormat.ParameterValues) {
 				methodNameBuilder.Append ('(');

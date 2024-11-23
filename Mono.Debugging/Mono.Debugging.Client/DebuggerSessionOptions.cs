@@ -50,5 +50,6 @@ namespace Mono.Debugging.Client
 		public ImmutableDictionary<string, string> SourceCodeMappings { get; set; } = ImmutableDictionary<string, string>.Empty;
 		public bool SearchMicrosoftSymbolServer { get; set; }
 		public bool SearchNuGetSymbolServer { get; set; }
+		public bool SkipNativeTransitions { get; set; }
 	}
 }

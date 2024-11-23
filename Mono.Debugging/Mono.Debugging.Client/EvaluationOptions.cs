@@ -120,6 +120,8 @@ namespace Mono.Debugging.Client
 		public bool ParameterTypes { get; set; } = true;
 
 		public bool ParameterValues { get; set; } = false;
+		
+		public bool Language { get; set; } = true;
 
 		/// <summary>
 		/// Default is null. Which means do same as "ProjectAssembliesOnly" setting.
@@ -138,6 +140,7 @@ namespace Mono.Debugging.Client
 			ParameterTypes = copy.ParameterTypes;
 			ParameterValues = copy.ParameterValues;
 			ExternalCode = copy.ExternalCode;
+			Language = copy.Language;
 		}
 	}
 
