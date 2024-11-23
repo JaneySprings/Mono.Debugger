@@ -43,6 +43,8 @@ namespace Mono.Debugger.Soft
 							domain = Thread.Domain;
 						} catch (AbsentInformationException) {
 							domain = Thread.Domain;
+						} catch (VMNotSuspendedException) {
+							domain = Thread.Domain;
 						}
 					} else {
 						domain = Thread.Domain;
