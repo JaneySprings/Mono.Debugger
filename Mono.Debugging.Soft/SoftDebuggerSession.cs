@@ -2093,7 +2093,8 @@ namespace Mono.Debugging.Soft
 				exception = ev.Exception;
 				if (ev.Request == unhandledExceptionRequest) {
 					etype = TargetEventType.UnhandledException;
-					if (exception.Type.FullName != "System.Threading.ThreadAbortException")
+					if (exception.Type.FullName != "System.Threading.ThreadAbortException" &&
+						exception.Type.FullName != "UnityEngine.ExitGUIException")
 						resume = false;
 				} else {
 					// Set the exception for this thread so that CatchPoint Print message(tracing) of {$exception} works
