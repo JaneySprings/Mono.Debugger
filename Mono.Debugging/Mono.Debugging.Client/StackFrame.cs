@@ -206,7 +206,7 @@ namespace Mono.Debugging.Client
 			}
 
 			methodNameBuilder.Append (SourceLocation.MethodName);
-			if (SourceLocation.MethodName.EndsWith('.'))
+			if (SourceLocation.MethodName.EndsWith("."))
 				methodNameBuilder.Append ("AnonymousMethod__");
 
 			if (options.StackFrameFormat.ParameterTypes || options.StackFrameFormat.ParameterNames || options.StackFrameFormat.ParameterValues) {

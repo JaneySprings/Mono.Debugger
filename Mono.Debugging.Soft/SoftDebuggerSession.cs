@@ -737,6 +737,9 @@ namespace Mono.Debugging.Soft
 		protected override bool AllowBreakEventChanges {
 			get { return true; }
 		}
+		public bool SkipPauseOnExceptions {
+			get; set;
+		}
 
 		public override void Dispose ()
 		{
@@ -2094,7 +2097,8 @@ namespace Mono.Debugging.Soft
 				if (ev.Request == unhandledExceptionRequest) {
 					etype = TargetEventType.UnhandledException;
 					if (exception.Type.FullName != "System.Threading.ThreadAbortException" &&
-						exception.Type.FullName != "UnityEngine.ExitGUIException")
+						exception.Type.FullName != "UnityEngine.ExitGUIException" &&
+						!SkipPauseOnExceptions)
 						resume = false;
 				} else {
 					// Set the exception for this thread so that CatchPoint Print message(tracing) of {$exception} works
