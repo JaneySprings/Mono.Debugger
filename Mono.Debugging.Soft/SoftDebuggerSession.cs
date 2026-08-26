@@ -3124,6 +3124,13 @@ namespace Mono.Debugging.Soft
 					}
 				}
 			}
+
+			if (target == null) {
+				var pdbData = GetPdbData (type.Assembly);
+				target = pdbData?.GetLocationByFileName (type.Assembly, file, line, column);
+				if (target != null)
+					genericMethod = IsGenericMethod (target.Method);
+			}
 			
 			return target;
 		}
